@@ -1,4 +1,4 @@
-# Anyigor Praise — Portfolio
+# Praise Anyigor — Portfolio
 
 My personal developer portfolio, built as a **Flutter web app**. It showcases who I am, the tools I work with, and my featured project — **NairaTrack**, an offline-first expense tracker for Nigerian Naira.
 

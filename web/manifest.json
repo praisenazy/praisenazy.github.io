@@ -1,11 +1,11 @@
 {
-    "name": "Anyigor Praise — Flutter Developer",
-    "short_name": "Anyigor Praise",
+    "name": "Praise Anyigor — Flutter Developer",
+    "short_name": "Praise Anyigor",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#05091A",
     "theme_color": "#05091A",
-    "description": "Portfolio of Anyigor Praise, Flutter Developer.",
+    "description": "Portfolio of Praise Anyigor, Flutter Developer.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

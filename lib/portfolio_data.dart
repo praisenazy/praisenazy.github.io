@@ -9,9 +9,9 @@ library;
 
 class PortfolioData {
   // ---- Identity ----
-  static const String name = 'Anyigor Praise';
+  static const String name = 'Praise Anyigor';
   static const String role = 'Flutter Developer';
-  static const String initials = 'AP'; // shown in the avatar circle
+  static const String initials = 'PA'; // shown in the avatar circle
   static const String tagline =
       'I build polished, offline-first mobile apps with Flutter.';
 
