@@ -35,7 +35,7 @@ class PortfolioData {
   // ---- Contact / links ----
   static const String email = 'nazypraise93@gmail.com'; // TODO: confirm email
   static const String githubUrl = 'https://github.com/praisenazy';
-  static const String linkedinUrl = ''; // TODO: add your LinkedIn URL (or leave '')
+  static const String linkedinUrl = 'https://www.linkedin.com/in/anyigor-praise';
   static const String twitterUrl = ''; // TODO: optional X/Twitter URL
 
   // ---- Skills (grouped) ----
