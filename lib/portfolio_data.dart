@@ -70,6 +70,11 @@ class PortfolioData {
       demoUrl: 'https://praisenazy.github.io/expense-tracker/',
       repoUrl: 'https://github.com/praisenazy/expense-tracker',
       imageAsset: 'assets/screenshots/home.png',
+      screenshots: [
+        'assets/screenshots/home.png',
+        'assets/screenshots/insights.png',
+        'assets/screenshots/add.png',
+      ],
       status: 'Live',
     ),
 
@@ -96,6 +101,7 @@ class Project {
     required this.description,
     required this.tech,
     this.highlights = const [],
+    this.screenshots = const [],
     this.demoUrl,
     this.repoUrl,
     this.imageAsset,
@@ -107,6 +113,7 @@ class Project {
   final String description;
   final List<String> tech;
   final List<String> highlights;
+  final List<String> screenshots; // multiple screenshots → animated phone
   final String? demoUrl; // live demo link (omit if none)
   final String? repoUrl; // source code link
   final String? imageAsset; // screenshot shown on the card

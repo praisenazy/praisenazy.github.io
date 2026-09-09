@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'portfolio_data.dart';
@@ -428,7 +430,14 @@ class _ProjectCardState extends State<_ProjectCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Thumb(imageAsset: p.imageAsset, initial: initial),
+            _Showcase(
+              images: p.screenshots.isNotEmpty
+                  ? p.screenshots
+                  : (p.imageAsset != null
+                      ? <String>[p.imageAsset!]
+                      : const <String>[]),
+              initial: initial,
+            ),
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -556,79 +565,206 @@ class _StatusBadge extends StatelessWidget {
   }
 }
 
-/// The card's top image area: a phone mockup on a gradient panel. Shows the
-/// screenshot when present, or a placeholder with the project's initial.
-class _Thumb extends StatelessWidget {
-  const _Thumb({required this.imageAsset, required this.initial});
-  final String? imageAsset;
+/// An eye-catching, animated project showcase: a phone that gently floats and
+/// cross-fades through the project's screenshots over a soft pulsing glow.
+class _Showcase extends StatefulWidget {
+  const _Showcase({required this.images, required this.initial});
+  final List<String> images;
   final String initial;
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 300,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withValues(alpha: 0.18),
-            AppColors.accent.withValues(alpha: 0.10),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      alignment: Alignment.center,
-      child: _Phone(imageAsset: imageAsset, initial: initial),
-    );
-  }
+  State<_Showcase> createState() => _ShowcaseState();
 }
 
-class _Phone extends StatelessWidget {
-  const _Phone({required this.imageAsset, required this.initial});
-  final String? imageAsset;
-  final String initial;
+class _ShowcaseState extends State<_Showcase> with TickerProviderStateMixin {
+  late final AnimationController _float = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 3),
+  )..repeat(reverse: true);
+  late final AnimationController _glow = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 4),
+  )..repeat(reverse: true);
+  Timer? _timer;
+  int _index = 0;
 
-  static const double _radius = 26;
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    if (widget.images.length > 1) {
+      _timer = Timer.periodic(const Duration(milliseconds: 2800), (_) {
+        if (mounted) {
+          setState(() => _index = (_index + 1) % widget.images.length);
+        }
+      });
+    }
+  }
+
+  void _goTo(int i) {
+    setState(() => _index = i);
+    _startTimer(); // restart the auto-advance after a manual tap
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _float.dispose();
+    _glow.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasImages = widget.images.isNotEmpty;
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      child: SizedBox(
+        height: 470,
+        width: double.infinity,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.surfaceAlt, AppColors.surface],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Soft pulsing glow behind the phone.
+              AnimatedBuilder(
+                animation: _glow,
+                builder: (context, _) => Container(
+                  width: 220 + _glow.value * 34,
+                  height: 220 + _glow.value * 34,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.38),
+                        AppColors.accent.withValues(alpha: 0.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              // Floating phone.
+              AnimatedBuilder(
+                animation: _float,
+                builder: (context, child) {
+                  final t = Curves.easeInOut.transform(_float.value);
+                  return Transform.translate(
+                    offset: Offset(0, -8 + t * 16),
+                    child: child,
+                  );
+                },
+                child: _phone(hasImages),
+              ),
+              // Dots (only when there's more than one screenshot).
+              if (widget.images.length > 1)
+                Positioned(
+                  bottom: 16,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (int i = 0; i < widget.images.length; i++)
+                        GestureDetector(
+                          onTap: () => _goTo(i),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 250),
+                            margin: const EdgeInsets.symmetric(horizontal: 4),
+                            width: i == _index ? 22 : 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: i == _index
+                                  ? AppColors.primary
+                                  : Colors.white.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(99),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _phone(bool hasImages) {
+    const w = 168.0, h = 388.0, radius = 30.0;
     return Container(
-      width: 150,
-      height: 250,
+      width: w,
+      height: h,
       decoration: BoxDecoration(
         color: AppColors.bg,
-        borderRadius: BorderRadius.circular(_radius),
-        border: Border.all(color: AppColors.border, width: 2),
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
+            color: AppColors.primary.withValues(alpha: 0.25),
+            blurRadius: 44,
+            spreadRadius: -6,
+            offset: const Offset(0, 18),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.45),
+            blurRadius: 30,
+            offset: const Offset(0, 20),
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(_radius - 2),
-        child: imageAsset == null
-            ? _placeholder()
-            : Image.asset(
-                imageAsset!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                errorBuilder: (_, _, _) => _placeholder(),
-              ),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(radius - 2),
+            child: hasImages
+                ? AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 600),
+                    child: Image.asset(
+                      widget.images[_index],
+                      key: ValueKey<int>(_index),
+                      fit: BoxFit.cover,
+                      width: w,
+                      height: h,
+                      errorBuilder: (_, _, _) => _placeholder(),
+                    ),
+                  )
+                : _placeholder(),
+          ),
+          // Notch.
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            width: 46,
+            height: 14,
+            decoration: BoxDecoration(
+              color: AppColors.bg,
+              borderRadius: BorderRadius.circular(99),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _placeholder() {
-    return Center(
-      child: GradientText(
-        initial,
-        style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w800),
+    return SizedBox(
+      width: 168,
+      height: 388,
+      child: Center(
+        child: GradientText(
+          widget.initial,
+          style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w800),
+        ),
       ),
     );
   }
