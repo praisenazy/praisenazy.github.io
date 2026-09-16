@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import 'portfolio_data.dart';
 import 'sections.dart';
+import 'sections/hero_section.dart';
 import 'theme.dart';
-import 'widgets.dart';
+import 'theme/breakpoints.dart';
+import 'widgets/site_header.dart';
+
+const _githubUrl = 'https://github.com/praisenazy';
+const _email = 'nazypraise93@gmail.com';
 
 void main() => runApp(const PortfolioApp());
 
@@ -13,7 +18,7 @@ class PortfolioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '${PortfolioData.name} — ${PortfolioData.role}',
+      title: 'Praise Anyigor — Flutter Developer',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       home: const HomePage(),
@@ -21,146 +26,110 @@ class PortfolioApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ScrollController _scroll = ScrollController();
+  final ValueNotifier<bool> _stuck = ValueNotifier<bool>(false);
+
+  // Section anchors. Only some exist today; missing ones no-op safely.
+  final Map<String, GlobalKey> _keys = {
+    'about': GlobalKey(),
+    'skills': GlobalKey(),
+    'projects': GlobalKey(),
+    'contact': GlobalKey(),
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(() {
+      final s = _scroll.offset > 40;
+      if (s != _stuck.value) _stuck.value = s;
+    });
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    _stuck.dispose();
+    super.dispose();
+  }
+
+  Future<void> _scrollTo(String id) async {
+    final ctx = _keys[id]?.currentContext;
+    if (ctx == null) return; // section not present yet → safe no-op
+    await Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeInOutCubic,
+      alignment: 0.0,
+    );
+  }
+
+  void _toTop() => _scroll.animateTo(0,
+      duration: const Duration(milliseconds: 650), curve: Curves.easeInOutCubic);
+
+  Future<void> _openGithub() =>
+      launchUrl(Uri.parse(_githubUrl), mode: LaunchMode.externalApplication);
+  Future<void> _openMail() => launchUrl(Uri.parse('mailto:$_email'));
+
+  @override
   Widget build(BuildContext context) {
-    // Keys mark scroll targets so the nav can jump to each section.
-    final aboutKey = GlobalKey();
-    final skillsKey = GlobalKey();
-    final workKey = GlobalKey();
-    final contactKey = GlobalKey();
-
-    Future<void> scrollTo(GlobalKey key) async {
-      final ctx = key.currentContext;
-      if (ctx == null) return;
-      await Scrollable.ensureVisible(
-        ctx,
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubic,
-      );
-    }
-
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
-          _NavBar(
-            onAbout: () => scrollTo(aboutKey),
-            onSkills: () => scrollTo(skillsKey),
-            onWork: () => scrollTo(workKey),
-            onContact: () => scrollTo(contactKey),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  HeroSection(
-                    onContact: () => scrollTo(contactKey),
-                    onProjects: () => scrollTo(workKey),
-                  ),
-                  KeyedSubtree(key: aboutKey, child: const AboutSection()),
-                  KeyedSubtree(key: skillsKey, child: const SkillsSection()),
-                  KeyedSubtree(key: workKey, child: const ProjectsSection()),
-                  KeyedSubtree(key: contactKey, child: const ContactSection()),
-                ],
+          const Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [AppColors.bg900, AppColors.bg850, AppColors.bg800],
+                  stops: [0.0, 0.46, 1.0],
+                ),
               ),
+            ),
+          ),
+          SingleChildScrollView(
+            controller: _scroll,
+            child: Column(
+              children: [
+                const SizedBox(height: Breakpoints.headerH),
+                KeyedSubtree(
+                  key: _keys['about'],
+                  child: HeroSection(
+                    onProjects: () => _scrollTo('projects'),
+                    onContact: _openMail,
+                    onGithub: _openGithub,
+                  ),
+                ),
+                // ── LATER SECTIONS GET APPENDED HERE ──
+                // (Existing sections kept below; they will be redesigned next.)
+                const AboutSection(),
+                KeyedSubtree(key: _keys['skills'], child: const SkillsSection()),
+                KeyedSubtree(key: _keys['projects'], child: const ProjectsSection()),
+                KeyedSubtree(key: _keys['contact'], child: const ContactSection()),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SiteHeader(
+              stuck: _stuck,
+              onLogo: _toTop,
+              onNav: _scrollTo,
+              onGithub: _openGithub,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// A fixed top navigation bar. Shows section links on wide screens; on narrow
-/// screens it collapses to the name + a GitHub button.
-class _NavBar extends StatelessWidget {
-  const _NavBar({
-    required this.onAbout,
-    required this.onSkills,
-    required this.onWork,
-    required this.onContact,
-  });
-
-  final VoidCallback onAbout;
-  final VoidCallback onSkills;
-  final VoidCallback onWork;
-  final VoidCallback onContact;
-
-  @override
-  Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 760;
-
-    return Container(
-      height: 68,
-      decoration: const BoxDecoration(
-        color: AppColors.bg,
-        border: Border(bottom: BorderSide(color: AppColors.border)),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: kMaxContentWidth),
-          child: Row(
-            children: [
-              GradientText(
-                PortfolioData.name,
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-              ),
-              const Spacer(),
-              if (wide) ...[
-                _NavLink('About', onAbout),
-                _NavLink('Skills', onSkills),
-                _NavLink('Projects', onWork),
-                _NavLink('Contact', onContact),
-                const SizedBox(width: 12),
-              ],
-              const GhostButton(
-                label: 'GitHub',
-                icon: Icons.code_rounded,
-                url: PortfolioData.githubUrl,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavLink extends StatefulWidget {
-  const _NavLink(this.label, this.onTap);
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  State<_NavLink> createState() => _NavLinkState();
-}
-
-class _NavLinkState extends State<_NavLink> {
-  bool _hover = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hover = true),
-      onExit: (_) => setState(() => _hover = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Text(
-            widget.label,
-            style: TextStyle(
-              color: _hover ? AppColors.textHigh : AppColors.textMid,
-              fontWeight: FontWeight.w600,
-              fontSize: 15,
-            ),
-          ),
-        ),
       ),
     );
   }

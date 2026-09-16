@@ -1,44 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// The site's colour palette. Dark navy to match NairaTrack, with an
-/// ocean-blue → cyan accent used for highlights and gradients.
+/// Site colour palette. Original names (bg, primary, accent…) are kept so the
+/// existing sections keep compiling; the new tokens below (bg900, cyan, blue…)
+/// are the design-system names the redesigned sections use.
 class AppColors {
-  static const bg = Color(0xFF05091A); // page background
-  static const surface = Color(0xFF0E1430); // cards
-  static const surfaceAlt = Color(0xFF141C3A); // raised cards / chips
-  static const primary = Color(0xFF2196F3); // ocean blue (NairaTrack accent)
-  static const accent = Color(0xFF22D3EE); // cyan
-
+  // ---- Legacy names (still used by About/Skills/Projects/Contact) ----
+  static const bg = Color(0xFF05091A);
+  static const surface = Color(0xFF0E1430);
+  static const surfaceAlt = Color(0xFF141C3A);
+  static const primary = Color(0xFF2196F3);
+  static const accent = Color(0xFF22D3EE);
   static const textHigh = Color(0xFFF3F6FF);
-  static const textMid = Color(0xFFB9C2DA);
   static const textLow = Color(0xFF7C86A2);
-  static const border = Color(0x1AFFFFFF); // white @ 10%
 
-  /// The signature accent gradient (buttons, headings, glows).
   static const accentGradient = LinearGradient(
     colors: [primary, accent],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
+
+  // ---- Design-system tokens (new sections) ----
+  static const bg900 = Color(0xFF060B18);
+  static const bg850 = Color(0xFF071223);
+  static const bg800 = Color(0xFF05101F);
+
+  static const surface1 = Color(0x0BFFFFFF);
+  static const surfaceHv = Color(0x18FFFFFF);
+  static const border = Color(0x1FFFFFFF);
+  static const borderSft = Color(0x12FFFFFF);
+  static const divider = Color(0x2EFFFFFF);
+
+  static const cyan = Color(0xFF22D3EE);
+  static const cyanLt = Color(0xFF67E8F9);
+  static const blue = Color(0xFF2F7BFF);
+  static const blueDeep = Color(0xFF1E6BFF);
+  static const blueLt = Color(0xFF5AA8FF);
+  static const bluePale = Color(0xFFA9D4FF);
+  static const sky = Color(0xFF4FC3F7);
+
+  static const textHi = Color(0xFFFFFFFF);
+  static const textMid = Color(0xFFC9D6E8);
+  static const textMut = Color(0xFF93A4BF);
+  static const textDim = Color(0xFF6B7C96);
 }
 
-/// Builds the app's dark theme with the Inter font.
+/// Signature gradients used across the site.
+class AppGradients {
+  static const name = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [AppColors.sky, AppColors.blue, AppColors.cyan],
+    stops: [0, .48, 1],
+  );
+  static const btn = LinearGradient(
+    begin: Alignment(-1, -.4),
+    end: Alignment(1, .4),
+    colors: [AppColors.blueDeep, Color(0xFF3B8CFF), AppColors.blue],
+    stops: [0, .55, 1],
+  );
+  static const logo = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [AppColors.blueLt, AppColors.cyan],
+  );
+}
+
+/// The app's dark theme. Website styling → no ink ripples anywhere.
 ThemeData buildTheme() {
   final base = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.bg,
+    scaffoldBackgroundColor: AppColors.bg900,
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.primary,
+      primary: AppColors.blue,
       surface: AppColors.surface,
     ),
     useMaterial3: true,
+    splashFactory: NoSplash.splashFactory,
   );
 
   return base.copyWith(
     textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
       bodyColor: AppColors.textMid,
-      displayColor: AppColors.textHigh,
+      displayColor: AppColors.textHi,
     ),
   );
 }
