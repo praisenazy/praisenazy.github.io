@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'sections.dart';
+import 'sections/about_section.dart';
 import 'sections/hero_section.dart';
 import 'theme.dart';
 import 'theme/breakpoints.dart';
@@ -101,17 +102,15 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 const SizedBox(height: Breakpoints.headerH),
-                KeyedSubtree(
-                  key: _keys['about'],
-                  child: HeroSection(
-                    onProjects: () => _scrollTo('projects'),
-                    onContact: _openMail,
-                    onGithub: _openGithub,
-                  ),
+                HeroSection(
+                  onProjects: () => _scrollTo('projects'),
+                  onContact: _openMail,
+                  onGithub: _openGithub,
                 ),
+                const SizedBox(height: 20),
+                KeyedSubtree(key: _keys['about'], child: const AboutSection()),
                 // ── LATER SECTIONS GET APPENDED HERE ──
                 // (Existing sections kept below; they will be redesigned next.)
-                const AboutSection(),
                 KeyedSubtree(key: _keys['skills'], child: const SkillsSection()),
                 KeyedSubtree(key: _keys['projects'], child: const ProjectsSection()),
                 KeyedSubtree(key: _keys['contact'], child: const ContactSection()),

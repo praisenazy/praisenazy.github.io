@@ -43,6 +43,20 @@ class AppColors {
   static const textMid = Color(0xFFC9D6E8);
   static const textMut = Color(0xFF93A4BF);
   static const textDim = Color(0xFF6B7C96);
+
+  // ---- Section 2 (About) tokens ----
+  static const emerald = Color(0xFF21E08D);
+  static const emeraldDim = Color(0xFF15A868);
+  static const emeraldEdge = Color(0x5921E08D);
+  static const violet = Color(0xFF7C6AF0);
+  static const violetDeep = Color(0xFF5B4BD6);
+  static const violetIcon = Color(0xFFC4B5FD);
+  static const iconBlue = Color(0xFF9FC8FF);
+  static const cardFill = Color(0xFF0C1730);
+  static const cardFillHi = Color(0xFF122344);
+  static const waveBlue = Color(0xFF0E2E7A);
+  static const waveEdge = Color(0xFF3B7FE8);
+  static const waveTeal = Color(0xFF14C8C8);
 }
 
 /// Signature gradients used across the site.
@@ -63,6 +77,23 @@ class AppGradients {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [AppColors.blueLt, AppColors.cyan],
+  );
+
+  // ---- Section 2 (About) gradients ----
+  static const card = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0x14FFFFFF), Color(0x05FFFFFF)],
+  );
+  static const tileBlue = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF2F7BFF), Color(0xFF1E5FE0)],
+  );
+  static const tileViolet = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF7C6AF0), Color(0xFF5B4BD6)],
   );
 }
 
