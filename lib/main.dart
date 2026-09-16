@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'sections.dart';
+import 'sections.dart' show ProjectsSection;
 import 'sections/about_section.dart';
+import 'sections/contact_section.dart';
 import 'sections/hero_section.dart';
 import 'sections/skills_section.dart';
 import 'theme.dart';
@@ -79,7 +81,21 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _openGithub() =>
       launchUrl(Uri.parse(_githubUrl), mode: LaunchMode.externalApplication);
-  Future<void> _openMail() => launchUrl(Uri.parse('mailto:$_email'));
+  Future<void> _openMail() async {
+    await Clipboard.setData(const ClipboardData(text: _email));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email copied — opening Gmail…'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+    await launchUrl(
+      Uri.parse('https://mail.google.com/mail/?view=cm&fs=1&to=$_email'),
+      mode: LaunchMode.externalApplication,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +127,8 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 20),
                 KeyedSubtree(key: _keys['about'], child: const AboutSection()),
                 KeyedSubtree(key: _keys['skills'], child: const SkillsSection()),
-                // ── LATER SECTIONS GET APPENDED HERE ──
-                // (Existing sections kept below; they will be redesigned next.)
+                // PROJECTS SECTION GETS INSERTED HERE
+                // (old-style placeholder for now — to be redesigned)
                 KeyedSubtree(key: _keys['projects'], child: const ProjectsSection()),
                 KeyedSubtree(key: _keys['contact'], child: const ContactSection()),
               ],

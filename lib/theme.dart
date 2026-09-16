@@ -69,6 +69,16 @@ class AppColors {
   static const cardSurface = Color(0xFF0A1428);
   static const taglineTxt = Color(0xFF8FB8E8);
   static const taglineSlash = Color(0x593C96FF);
+
+  // ---- Section 4 (Contact) tokens ----
+  static const mintEnd = Color(0xFF34E0B0);
+  static const pillInk = Color(0xFF06233A);
+  static const ghostFill = Color(0xD908152B);
+  static const ghostEdge = Color(0x595AC8FF);
+  static const footerTxt = Color(0xFF8FA8C8);
+  static const contactDeep = Color(0xFF071A3A);
+  static const contactMid = Color(0xFF0A2350);
+  static const screenInk = Color(0xFFBFE0FF);
 }
 
 /// Signature gradients used across the site.
@@ -106,6 +116,13 @@ class AppGradients {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [Color(0xFF7C6AF0), Color(0xFF5B4BD6)],
+  );
+
+  static const emailPill = LinearGradient(
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+    colors: [Color(0xFF2F9BFF), Color(0xFF22D3EE), Color(0xFF34E0B0)],
+    stops: [0.0, 0.52, 1.0],
   );
 }
 

@@ -6,10 +6,15 @@ import '../theme.dart';
 /// blur; [crestOpacity] scales the bright edge strokes. A third thin crest is
 /// added when [intensity] > 1.1. Defaults reproduce the Section 2 footer.
 class WaveDividerPainter extends CustomPainter {
-  const WaveDividerPainter({this.intensity = 1.0, this.crestOpacity = 0.75});
+  const WaveDividerPainter({
+    this.intensity = 1.0,
+    this.crestOpacity = 0.75,
+    this.fillTint,
+  });
 
   final double intensity;
   final double crestOpacity;
+  final Color? fillTint; // blended into the wave body (Contact screen only)
 
   double get _crestMul => (crestOpacity / 0.75);
 
@@ -44,6 +49,11 @@ class WaveDividerPainter extends CustomPainter {
       ..cubicTo(w * 0.06, h * 0.10, w * 0.16, h * 0.06, w * 0.30, h * 0.24)
       ..cubicTo(w * 0.55, h * 0.52, w * 0.82, h * 0.72, w + 20, h * 0.96);
     final bFill = Path.from(bTop)..lineTo(w + 20, h + 20)..lineTo(-20, h + 20)..close();
+    var b1 = fa(0xFF0E2E7A, 0.85), b2 = fa(0xFF071A44, 0.9);
+    if (fillTint != null) {
+      b1 = Color.lerp(b1, fillTint!.withValues(alpha: b1.a), 0.35)!;
+      b2 = Color.lerp(b2, fillTint!.withValues(alpha: b2.a), 0.35)!;
+    }
     canvas.drawPath(
       bFill,
       Paint()
@@ -51,7 +61,7 @@ class WaveDividerPainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [fa(0xFF0E2E7A, 0.85), fa(0xFF071A44, 0.9)],
+          colors: [b1, b2],
         ).createShader(full),
     );
 
@@ -134,5 +144,7 @@ class WaveDividerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(WaveDividerPainter old) =>
-      old.intensity != intensity || old.crestOpacity != crestOpacity;
+      old.intensity != intensity ||
+      old.crestOpacity != crestOpacity ||
+      old.fillTint != fillTint;
 }
