@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'sections.dart';
 import 'sections/about_section.dart';
 import 'sections/hero_section.dart';
+import 'sections/skills_section.dart';
 import 'theme.dart';
 import 'theme/breakpoints.dart';
 import 'widgets/site_header.dart';
@@ -109,9 +110,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 20),
                 KeyedSubtree(key: _keys['about'], child: const AboutSection()),
+                KeyedSubtree(key: _keys['skills'], child: const SkillsSection()),
                 // ── LATER SECTIONS GET APPENDED HERE ──
                 // (Existing sections kept below; they will be redesigned next.)
-                KeyedSubtree(key: _keys['skills'], child: const SkillsSection()),
                 KeyedSubtree(key: _keys['projects'], child: const ProjectsSection()),
                 KeyedSubtree(key: _keys['contact'], child: const ContactSection()),
               ],

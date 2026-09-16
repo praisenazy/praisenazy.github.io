@@ -57,6 +57,18 @@ class AppColors {
   static const waveBlue = Color(0xFF0E2E7A);
   static const waveEdge = Color(0xFF3B7FE8);
   static const waveTeal = Color(0xFF14C8C8);
+
+  // ---- Section 3 (Skills) tokens ----
+  static const eyebrowBlue = Color(0xFF8FB4FF);
+  static const indigo = Color(0xFF4F46E5);
+  static const teal = Color(0xFF14B8A6);
+  static const tealBright = Color(0xFF2DD4BF);
+  static const mintText = Color(0xFF7FE8C8);
+  static const blueText = Color(0xFF6FB4FF);
+  static const violetText = Color(0xFFC4A8FF);
+  static const cardSurface = Color(0xFF0A1428);
+  static const taglineTxt = Color(0xFF8FB8E8);
+  static const taglineSlash = Color(0x593C96FF);
 }
 
 /// Signature gradients used across the site.

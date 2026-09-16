@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 
-/// A 72×72 rounded gradient tile holding a glyph, with a soft coloured glow.
+/// A rounded gradient tile holding a glyph, with a soft coloured glow.
 class IconTile extends StatelessWidget {
   const IconTile({
     super.key,
     required this.gradient,
     required this.glow,
     required this.child,
-    this.dimension = 72,
+    this.size = 72,
+    this.radius = 18,
   });
 
   final Gradient gradient;
   final Color glow;
   final Widget child;
-  final double dimension;
+  final double size;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: dimension,
-      height: dimension,
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: const Color(0x1FFFFFFF)),
         boxShadow: [
           BoxShadow(

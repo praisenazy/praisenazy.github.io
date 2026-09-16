@@ -256,7 +256,10 @@ class _NavLinkState extends State<NavLink> {
 
   @override
   Widget build(BuildContext context) {
-    final on = widget.active || _hover;
+    // Active label is cyan; hovered-but-inactive is white; inactive is muted.
+    final labelColor = widget.active
+        ? AppColors.cyan
+        : (_hover ? AppColors.textHi : AppColors.textMut);
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
@@ -270,14 +273,13 @@ class _NavLinkState extends State<NavLink> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(widget.label,
-                  style: AppText.nav.copyWith(color: on ? AppColors.textHi : AppColors.textMut)),
-              const SizedBox(height: 10),
+              Text(widget.label, style: AppText.nav.copyWith(color: labelColor)),
+              const SizedBox(height: 12),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOutCubic,
-                height: 2,
-                width: widget.active ? _measure() : 0,
+                height: 3,
+                width: widget.active ? _measure() + 8 : 0,
                 decoration: BoxDecoration(
                   color: AppColors.cyan,
                   borderRadius: BorderRadius.circular(2),

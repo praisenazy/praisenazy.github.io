@@ -29,22 +29,31 @@ class GradientText extends StatelessWidget {
 }
 
 /// Cyan eyebrow: a short gradient rule + uppercase spaced label.
+/// [Eyebrow.heavy] uses a wider/taller blue rule and a lighter-blue label
+/// (used on the Skills screen); the default stays 36×2 cyan for Sections 1–2.
 class Eyebrow extends StatelessWidget {
-  const Eyebrow(this.text, {super.key});
+  const Eyebrow(this.text, {super.key}) : heavy = false;
+  const Eyebrow.heavy(this.text, {super.key}) : heavy = true;
   final String text;
+  final bool heavy;
 
   @override
   Widget build(BuildContext context) {
+    final ruleColor = heavy ? AppColors.eyebrowBlue : AppColors.cyan;
+    final labelColor = heavy ? AppColors.eyebrowBlue : AppColors.cyan;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 36,
-          height: 2,
+          width: heavy ? 46 : 36,
+          height: heavy ? 3 : 2,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(3),
             gradient: LinearGradient(
-              colors: [AppColors.cyan.withValues(alpha: 0.25), AppColors.cyan],
+              colors: [
+                (heavy ? const Color(0x333C96FF) : AppColors.cyan.withValues(alpha: 0.25)),
+                ruleColor,
+              ],
             ),
           ),
         ),
@@ -52,7 +61,8 @@ class Eyebrow extends StatelessWidget {
         Text(
           text.toUpperCase(),
           style: AppText.eyebrow.copyWith(
-            shadows: [Shadow(color: AppColors.cyan.withValues(alpha: 0.35), blurRadius: 16)],
+            color: labelColor,
+            shadows: [Shadow(color: labelColor.withValues(alpha: 0.30), blurRadius: 16)],
           ),
         ),
       ],
